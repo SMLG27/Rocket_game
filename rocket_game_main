@@ -1,0 +1,150 @@
+import pygame
+import random
+
+# Initialisierung von Pygame
+pygame.init()
+
+# Fenstergröße
+window_width, window_height = 800, 600
+
+# Farben
+white = (255, 255, 255)
+red = (255, 0, 0)
+blue = (0, 0, 255)
+
+# Spielbildschirm erstellen
+win = pygame.display.set_mode((window_width, window_height))
+pygame.display.set_caption("Flugzeug Spiel")
+
+# Bilder laden
+background_img = pygame.image.load("C:\\Location\\hintergrund.png")
+airplane_img = pygame.image.load("C:\\Location\\flugzeug.png")
+rocket_img = pygame.image.load("C:\\Location\\rakete.png")
+bonus_img = pygame.image.load("C:\\Location\\bonus.png")
+
+# Funktion zum Anzeigen von Text auf dem Bildschirm
+def show_text(text, size, x, y):
+    font = pygame.font.SysFont(None, size)
+    text_surface = font.render(text, True, white)
+    win.blit(text_surface, (x, y))
+
+# Hauptfunktion, die das Spiel ausführt
+def game_loop():
+    # Flugzeug-Eigenschaften
+    airplane_width = 50
+    airplane_height = 30
+    airplane_x = 50
+    airplane_y = window_height // 2 - airplane_height // 2
+    airplane_speed = 5
+    airplane_horizontal_speed = 0
+
+    # Hintergrund-Eigenschaften
+    background_x = 0
+    background_speed = 2
+
+    # Raketen-Eigenschaften
+    rocket_width = 30
+    rocket_height = 10
+    rocket_x = window_width
+    rocket_y = random.randint(0, window_height - rocket_height)
+    rocket_speed = 10
+
+    # Bonus-Eigenschaften
+    bonus_width = 20
+    bonus_height = 20
+    bonus_x = random.randint(0, window_width - bonus_width)
+    bonus_y = -bonus_height
+    bonus_speed = 5
+
+    # Punktzahl und Leben
+    score = 0
+    lives = 3
+
+    clock = pygame.time.Clock()
+
+    game_over = False
+    while not game_over:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_over = True
+
+        # Bewegung des Flugzeugs
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            airplane_y -= airplane_speed
+        if keys[pygame.K_DOWN]:
+            airplane_y += airplane_speed
+        if keys[pygame.K_LEFT]:
+            airplane_horizontal_speed = -airplane_speed
+        if keys[pygame.K_RIGHT]:
+            airplane_horizontal_speed = airplane_speed
+
+        # Bewegung aktualisieren
+        airplane_x += airplane_horizontal_speed
+
+        # Hintergrund bewegen
+        background_x -= background_speed
+        if background_x <= -window_width:
+            background_x = 0
+
+        # Rakete und Bonus bewegen
+        rocket_x -= rocket_speed
+        bonus_y += bonus_speed
+
+        if rocket_x < 0:
+            rocket_x = window_width
+            rocket_y = random.randint(0, window_height - rocket_height)
+
+        if bonus_y > window_height:
+            bonus_x = random.randint(0, window_width - bonus_width)
+            bonus_y = -bonus_height
+
+        # Kollisionserkennung
+        if airplane_y < 0:
+            airplane_y = 0
+        elif airplane_y > window_height - airplane_height:
+            airplane_y = window_height - airplane_height
+
+        if airplane_x + airplane_width > rocket_x and \
+           airplane_x < rocket_x + rocket_width and \
+           airplane_y + airplane_height > rocket_y and \
+           airplane_y < rocket_y + rocket_height:
+            # Kollision mit Rakete
+            # explosion_sound.play()
+            lives -= 1
+            rocket_x = window_width
+            rocket_y = random.randint(0, window_height - rocket_height)
+
+        if airplane_x + airplane_width > bonus_x and \
+           airplane_x < bonus_x + bonus_width and \
+           airplane_y + airplane_height > bonus_y and \
+           airplane_y < bonus_y + bonus_height:
+            # Kollision mit Bonus
+            # bonus_sound.play()
+            score += 10
+            bonus_x = random.randint(0, window_width - bonus_width)
+            bonus_y = -bonus_height
+
+        win.blit(background_img, (background_x, 0))
+        win.blit(background_img, (background_x + window_width, 0))
+        win.blit(airplane_img, (airplane_x, airplane_y))
+        win.blit(rocket_img, (rocket_x, rocket_y))
+        win.blit(bonus_img, (bonus_x, bonus_y))
+
+        show_text("Score: " + str(score), 30, 10, 10)
+        show_text("Lives: " + str(lives), 30, window_width - 120, 10)
+
+        if lives <= 0:
+            show_text("Game Over", 50, window_width // 2 - 100, window_height // 2)
+            pygame.display.update()
+            pygame.time.delay(2000)  # Zeigt "Game Over" für 2 Sekunden an
+            game_over = True
+
+        pygame.display.update()
+        clock.tick(30)  # 30 FPS
+
+    pygame.quit()
+    quit()
+
+if __name__ == "__main__":
+    game_loop()
