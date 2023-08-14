@@ -1,5 +1,5 @@
 Flugzeug Spiel.
-Dies ist ein einfaches Spiel in Python, das mithilfe der Pygame-Bibliothek erstellt wurde. Das Ziel des Spiels ist es, mit einem Flugzeug Hindernissen auszuweichen, Punkte zu sammeln und so lange wie möglich zu überleben.
+Das Ziel des Spiels ist es, mit einem Flugzeug Hindernissen auszuweichen, Punkte zu sammeln und so lange wie möglich zu überleben.
 
 Voraussetzungen
 Bevor du das Spiel ausführst, stelle sicher, dass du die Pygame-Bibliothek installiert hast:
